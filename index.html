@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+
+            margin-bottom: 15px;
+        }
+
+        label {
+
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            padding: 8px;
+            width: 100%;
+        }
+
+
+        input[type="radio"] {
+            width: auto;
+        }
+
+        .radio-group label {
+            display: inline;
+            font-weight: normal;
+            margin-right: 15px;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Student Registration</h2>
+
+    <form>
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="StudentName" placeholder="Enter full name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rollno">Roll Number</label>
+            <input type="text" id="rollno" name="RollNo" placeholder="Enter roll number" required>
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+                <input type="radio" id="male" name="gender" value="male" required>
+                <label for="male">Male</label>
+
+                <input type="radio" id="female" name="gender" value="female">
+                <label for="female">Female</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter email ID" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Mobile Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter mobile number" required>
+        </div>
+
+        <div class="form-group">
+            <label for="university">University</label>
+            <select id="university" name="university" required>
+                <option value="">-- Select University --</option>
+                <option value="amrita">Amrita Vishwa Vidyapeetham</option>
+                <option value="kerala">University of Kerala</option>
+                <option value="calicut">University of Calicut</option>
+                <option value="mg">Mahatma Gandhi University</option>
+                <option value="JGI">Jain Uniiversity</option>
+                <option value="rg">RajaGiri College of Management and Applied Science </option>
+                <option value="RSET">RjaGiri School of Engineering and Technology</option>
+                <option value="cusat">Cochin University of Science and Technology</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="course">Course</label>
+            <select id="course" name="course" required>
+                <option value="">-- Select Course --</option>
+                <option value="bca">BCA</option>
+                <option value="Btech">B.Tech</option>
+                <option value="bsc">B.Sc Computer Science</option>
+                <option value="mca">MCA</option>
+                <option value="msc">M.Sc Computer Science</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="Address" placeholder="Enter complete address..." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" aria-label="Submit Registration">Register</button>
+    </form>
+
+</body>
+
+</html>
