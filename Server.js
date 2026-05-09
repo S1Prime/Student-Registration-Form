@@ -13,8 +13,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // ── Email Credentials (replace these!) ──
-const GMAIL_USER     = 'your-sender@gmail.com';   // Gmail you send FROM
-const GMAIL_APP_PASS = 'xxxx xxxx xxxx xxxx';     // 16-char App Password (not your login password)
+const GMAIL_USER     = 'vaishnavvenu2007@gmail.com'; // your Gmail
+const GMAIL_APP_PASS = '7b36aa3db07e';        // the 16-char app password
+
 const NOTIFY_EMAIL   = 'vaishnavvenu2007@gmail.com'; // Email you RECEIVE notifications at
 
 const transporter = nodemailer.createTransport({
