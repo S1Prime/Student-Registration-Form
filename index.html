@@ -5,136 +5,590 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
+    <meta name="description" content="Register as a student with your university details.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --accent: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.35);
+            --glass-bg: rgba(15, 10, 30, 0.6);
+            --glass-border: rgba(167, 139, 250, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.06);
+            --input-border: rgba(167, 139, 250, 0.3);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --error: #f87171;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-
-            max-width: 600px;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: #06040f;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        h2 {
+        /* ── Animated Gradient Background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124, 58, 237, 0.45) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 50% at 80% 90%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 60% at 50% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            animation: bgShift 12s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes bgShift {
+            0%   { opacity: 1; filter: hue-rotate(0deg); }
+            50%  { opacity: 0.85; filter: hue-rotate(20deg); }
+            100% { opacity: 1; filter: hue-rotate(-10deg); }
+        }
+
+        /* ── Particle Canvas ── */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ── Grid Overlay ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(167, 139, 250, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(167, 139, 250, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ── Form Card ── */
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 560px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 36px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow:
+                0 0 0 1px rgba(124, 58, 237, 0.1),
+                0 25px 60px rgba(0, 0, 0, 0.6),
+                0 0 80px rgba(124, 58, 237, 0.12);
+            animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(32px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Card top glowing strip */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 12%; right: 12%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-light), var(--accent), var(--primary-light), transparent);
+            border-radius: 100px;
+            animation: stripGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes stripGlow {
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 12px var(--primary); }
+            50%       { opacity: 1;   box-shadow: 0 0 24px var(--accent); }
+        }
+
+        /* ── Header ── */
+        .header {
             text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 5px;
+            margin-bottom: 32px;
         }
 
-        .form-group {
+        .header .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px; height: 60px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            font-size: 26px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5);
+            animation: iconPulse 3s ease-in-out infinite;
+        }
 
-            margin-bottom: 15px;
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5); transform: scale(1); }
+            50%       { box-shadow: 0 8px 48px rgba(6, 182, 212, 0.6); transform: scale(1.05); }
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+            margin-bottom: 28px;
+        }
+
+        /* ── Form Groups ── */
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.05s; }
+        .form-group:nth-child(2) { animation-delay: 0.10s; }
+        .form-group:nth-child(3) { animation-delay: 0.15s; }
+        .form-group:nth-child(4) { animation-delay: 0.20s; }
+        .form-group:nth-child(5) { animation-delay: 0.25s; }
+        .form-group:nth-child(6) { animation-delay: 0.30s; }
+        .form-group:nth-child(7) { animation-delay: 0.35s; }
+        .form-group:nth-child(8) { animation-delay: 0.40s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         label {
-
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
         }
 
+        /* ── Input wrapper (for floating icon) ── */
+        .input-wrapper {
+            position: relative;
+        }
 
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .input-wrapper:has(textarea) .input-icon {
+            top: 14px;
+            transform: none;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--primary-light);
+        }
+
+        /* ── Inputs ── */
         input[type="text"],
         input[type="email"],
         input[type="tel"],
         select,
         textarea {
-            padding: 8px;
             width: 100%;
+            padding: 12px 14px 12px 42px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.925rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
-
-        input[type="radio"] {
-            width: auto;
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-light);
+            background: rgba(124, 58, 237, 0.08);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2), 0 0 20px rgba(124, 58, 237, 0.1);
         }
 
-        .radio-group label {
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a78bfa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        select option {
+            background: #1e1533;
+            color: var(--text-primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+            padding-top: 12px;
+        }
+
+        /* ── Radio Group ── */
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .radio-option:has(input:checked) {
+            border-color: var(--primary-light);
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--primary-light);
+            box-shadow: 0 0 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .radio-option label {
             display: inline;
-            font-weight: normal;
-            margin-right: 15px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: none;
+            letter-spacing: 0;
+            color: inherit;
+            cursor: pointer;
+            margin: 0;
         }
 
+        /* ── Submit Button ── */
         .submit-btn {
-            padding: 10px 20px;
-            background-color: #000;
+            width: 100%;
+            padding: 14px 24px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, var(--primary), #5b21b6);
             color: #fff;
             border: none;
+            border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            display: block;
-            margin: 10px auto 0 auto;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.45);
+            letter-spacing: 0.3px;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .submit-btn:hover::before { opacity: 1; }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 40px rgba(124, 58, 237, 0.55);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .submit-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Success Toast ── */
+        .toast {
+            position: fixed;
+            top: 24px; right: 24px;
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            backdrop-filter: blur(16px);
+            z-index: 999;
+            display: none;
+            animation: toastIn 0.4s ease;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.2);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .card { padding: 28px 20px; }
+            .header h1 { font-size: 1.45rem; }
         }
     </style>
 </head>
 
 <body>
+    <canvas id="particles-canvas"></canvas>
 
-    <h2>Student Registration</h2>
+    <div class="toast" id="successToast">✅ Registration submitted successfully!</div>
 
-    <form>
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="StudentName" placeholder="Enter full name" required>
+    <div class="card">
+        <div class="header">
+            <div class="icon">🎓</div>
+            <h1>Student Registration</h1>
+            <p>Fill in your details to complete registration</p>
         </div>
+        <div class="divider"></div>
 
-        <div class="form-group">
-            <label for="rollno">Roll Number</label>
-            <input type="text" id="rollno" name="RollNo" placeholder="Enter roll number" required>
-        </div>
+        <form id="regForm" novalidate>
 
-        <div class="form-group">
-            <label>Gender</label>
-            <div class="radio-group">
-                <input type="radio" id="male" name="gender" value="male" required>
-                <label for="male">Male</label>
-
-                <input type="radio" id="female" name="gender" value="female">
-                <label for="female">Female</label>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="name" name="StudentName" placeholder="Enter your full name" required>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="Enter email ID" required>
-        </div>
+            <div class="form-group">
+                <label for="rollno">Roll Number</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🆔</span>
+                    <input type="text" id="rollno" name="RollNo" placeholder="Enter roll number" required>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="phone">Mobile Number</label>
-            <input type="tel" id="phone" name="phone" placeholder="Enter mobile number" required>
-        </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="male" name="gender" value="male" required>
+                        <label for="male">Male</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="female" name="gender" value="female">
+                        <label for="female">Female</label>
+                    </div>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="university">University</label>
-            <select id="university" name="university" required>
-                <option value="">-- Select University --</option>
-                <option value="amrita">Amrita Vishwa Vidyapeetham</option>
-                <option value="kerala">University of Kerala</option>
-                <option value="calicut">University of Calicut</option>
-                <option value="mg">Mahatma Gandhi University</option>
-                <option value="JGI">Jain Uniiversity</option>
-                <option value="rg">RajaGiri College of Management and Applied Science </option>
-                <option value="RSET">RjaGiri School of Engineering and Technology</option>
-                <option value="cusat">Cochin University of Science and Technology</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" id="email" name="email" placeholder="Enter email address" required>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="course">Course</label>
-            <select id="course" name="course" required>
-                <option value="">-- Select Course --</option>
-                <option value="bca">BCA</option>
-                <option value="Btech">B.Tech</option>
-                <option value="bsc">B.Sc Computer Science</option>
-                <option value="mca">MCA</option>
-                <option value="msc">M.Sc Computer Science</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="phone">Mobile Number</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📱</span>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter mobile number" required>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="address">Address</label>
-            <textarea id="address" name="Address" placeholder="Enter complete address..." required></textarea>
-        </div>
+            <div class="form-group">
+                <label for="university">University</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🏛️</span>
+                    <select id="university" name="university" required>
+                        <option value="">-- Select University --</option>
+                        <option value="amrita">Amrita Vishwa Vidyapeetham</option>
+                        <option value="kerala">University of Kerala</option>
+                        <option value="calicut">University of Calicut</option>
+                        <option value="mg">Mahatma Gandhi University</option>
+                        <option value="JGI">Jain University</option>
+                        <option value="rg">RajaGiri College of Management and Applied Science</option>
+                        <option value="RSET">RajaGiri School of Engineering and Technology</option>
+                        <option value="cusat">Cochin University of Science and Technology</option>
+                    </select>
+                </div>
+            </div>
 
-        <button type="submit" class="submit-btn" aria-label="Submit Registration">Register</button>
-    </form>
+            <div class="form-group">
+                <label for="course">Course</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📚</span>
+                    <select id="course" name="course" required>
+                        <option value="">-- Select Course --</option>
+                        <option value="bca">BCA</option>
+                        <option value="Btech">B.Tech</option>
+                        <option value="bsc">B.Sc Computer Science</option>
+                        <option value="mca">MCA</option>
+                        <option value="msc">M.Sc Computer Science</option>
+                    </select>
+                </div>
+            </div>
 
+            <div class="form-group">
+                <label for="address">Address</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📍</span>
+                    <textarea id="address" name="Address" placeholder="Enter your complete address..." required></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" aria-label="Submit Registration">
+                <span>🚀 Register Now</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        /* ── Particle System ── */
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 60;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+        function createParticle() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: randomBetween(1, 2.8),
+                dx: randomBetween(-0.3, 0.3),
+                dy: randomBetween(-0.4, -0.1),
+                alpha: randomBetween(0.2, 0.7),
+                dAlpha: randomBetween(0.002, 0.006),
+                color: Math.random() < 0.5 ? '167,139,250' : '6,182,212'
+            };
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle());
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = `rgba(${p.color}, 0.6)`;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                p.x += p.dx;
+                p.y += p.dy;
+                p.alpha -= p.dAlpha;
+
+                if (p.alpha <= 0 || p.y < -10) {
+                    Object.assign(p, createParticle(), { y: canvas.height + 10, alpha: randomBetween(0.2, 0.7) });
+                }
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        /* ── Form Submit ── */
+        document.getElementById('regForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                return;
+            }
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.querySelector('span').textContent = '⏳ Submitting...';
+
+            setTimeout(() => {
+                const toast = document.getElementById('successToast');
+                toast.style.display = 'block';
+                btn.querySelector('span').textContent = '✅ Registered!';
+                setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            }, 900);
+        });
+
+        /* ── Input float-label glow on valid ── */
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', () => {
+                if (el.value) {
+                    el.style.borderColor = 'rgba(167,139,250,0.6)';
+                } else {
+                    el.style.borderColor = '';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
